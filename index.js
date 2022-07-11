@@ -6,9 +6,8 @@ const bot = new TelegramApi(token, {polling:true})
 
 const chats = {}
 
-
 const startGame = async (chatId) => {
-		await bot.sendMessage(chatId, `Сейчас я загадаю тебе число, а ты  ${msg.from.first_name} попробуй угадай`)
+		await bot.sendMessage(chatId, `Сейчас я загадаю тебе число, а ты  попробуй угадай`)
 		const randomNumbers = Math.floor(Math.random() * 10);
 		chats[chatId] = randomNumbers;
 		await bot.sendMessage(chatId, 'Отгадывай', gameOptions);
@@ -18,17 +17,21 @@ const start = () => {
 		[
 			{command:'/start', description: 'Приветствие'},
 			{command:'/info', description: 'Инфо о пользователе'},
-			{command:'/game', description: 'Игра'}
+			{command:'/game', description: 'Игра'},
+
 		])
 	
 	bot.on('message', async msg => {
 		const text = msg.text;
 		const chatId = msg.chat.id;
-		const lastName = msg.from.last_name
-	
+
 		if (text === '/start'){
 		 await bot.sendSticker(chatId, `https://tlgrm.ru/_/stickers/cdb/d29/cdbd2943-5c75-34c3-a339-bf6e9b524b53/2.webp`);
+		//  if (firstName === 'Дмитрий'|| 'Алеся'|| 'Николай' || 'Максим'){
+		// 	return bot.sendMessage(chatId, "Такого хорошего человека нельзя обзывать" )
+		// }
 		 return bot.sendMessage(chatId, `Уёбок, добро пожаловать в Бот для оскарблений`);
+		 
 		}
 		if (text === '/info'){
 		 return	bot.sendMessage(chatId, `Я назову тебя Уёбок, хотя другие называют тебя ${msg.from.first_name}  `)
@@ -37,17 +40,19 @@ const start = () => {
 			return startGame(chatId);
 		} 
 
+
+
 		return bot.sendMessage(chatId, "Ты написал непонятную залупу, напиши нормально" )
 		//bot.sendMessage(chatId, `Ты написал мне ${text}`)
 		
 	})
-	bot.on('callback_query', msg => {
-		const data = msg.data
-		const chatId = msg.message.chat.id
-		if(data === '/again') {
-		 	return	startGame(chatId);
+	bot.on('callback_query', async  msg => {
+		const data = msg.data;
+		const chatId = msg.message.chat.id;
+		if (data === '/again') {
+		 	return	startGame(chatId)
 		}
-		if(data === chats[chatId]){
+		if (data === chats[chatId]){
 				return bot.sendMessage(chatId, `Поздравляю, ты отгадал цыфру ${chats[chatId]}`, againOptions)
 		} else {
 			return bot.sendMessage(chatId, `Ты не угадал, бот загадал цыфру ${chats[chatId]}`, againOptions)
@@ -55,6 +60,8 @@ const start = () => {
 		//bot.sendMessage(chatId, `Ты выбрал цифру ${data} `)
 	})
 	
+	
+
 }
 
 start()
